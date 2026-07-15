@@ -1,0 +1,33 @@
+# dbt Models & Semantic Layer Plan
+
+## Objective
+Build clean and reusable data models using dbt and define governed business metrics for the MetricMind project.
+
+## Planned Layers
+
+### Raw Layer
+- Import raw sales dataset from Snowflake
+
+### Staging Layer
+- Clean column names
+- Standardize data types
+- Remove duplicates
+- Handle null values
+
+### Business Layer
+- Revenue
+- Cost
+- Profit
+- Margin
+
+## Semantic Dimensions
+- Time
+- Region
+- Country
+- Product Category
+
+## Status
+- Dataset uploaded ✅
+- Snowflake selected ✅
+- dbt project setup ⏳
+- Semantic layer definitions ⏳
