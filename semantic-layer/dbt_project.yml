@@ -1,0 +1,5 @@
+name: semantic_layer
+version: "1.0"
+profile: semantic_layer
+config-version: 2
+model-paths: ["semantic_models"]
