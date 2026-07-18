@@ -17,7 +17,12 @@ cubes:
       - name: total_quantity
         sql: QUANTITY
         type: sum
-
+      
+      - name: average_order_value
+        sql: SUM(SALES) / COUNT(ORDER_ID)
+        type: number
+        format: currency
+        
     dimensions:
       - name: order_id
         sql: ORDER_ID
