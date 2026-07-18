@@ -1,0 +1,44 @@
+cubes:
+  - name: orders
+    sql_table: AXLERO_DEV.STAGING.STG_SUPERSTORE_ORDERS_CLEANED
+
+    measures:
+      - name: count
+        type: count
+
+      - name: total_sales
+        sql: SALES
+        type: sum
+
+      - name: total_profit
+        sql: PROFIT
+        type: sum
+
+      - name: total_quantity
+        sql: QUANTITY
+        type: sum
+
+    dimensions:
+      - name: order_id
+        sql: ORDER_ID
+        type: string
+
+      - name: customer_name
+        sql: CUSTOMER_NAME
+        type: string
+
+      - name: product_name
+        sql: PRODUCT_NAME
+        type: string
+
+      - name: category
+        sql: CATEGORY
+        type: string
+
+      - name: region
+        sql: REGION
+        type: string
+
+      - name: order_date
+        sql: ORDER_DATE
+        type: time
