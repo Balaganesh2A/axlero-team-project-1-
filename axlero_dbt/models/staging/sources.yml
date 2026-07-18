@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw
+    database: AXLERO_DEV
+    schema: RAW
+    tables:
+      - name: superstore_orders
+      
