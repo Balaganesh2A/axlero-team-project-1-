@@ -17,12 +17,23 @@ cubes:
       - name: total_quantity
         sql: QUANTITY
         type: sum
-      
+
       - name: average_order_value
-        sql: SUM(SALES) / COUNT(ORDER_ID)
+        sql: "1.0 * {total_sales} / NULLIF({count}, 0)"
         type: number
         format: currency
-        
+
+      - name: total_cost
+        sql: SUM(SALES) - SUM(PROFIT)
+        type: number
+        format: currency
+
+      - name: profit_margin
+        sql: "1.0 * {total_profit} / NULLIF({total_sales}, 0)"
+        type: number
+        format: percent
+  
+ 
     dimensions:
       - name: order_id
         sql: ORDER_ID
@@ -42,6 +53,10 @@ cubes:
 
       - name: region
         sql: REGION
+        type: string
+
+      - name: country
+        sql: COUNTRY
         type: string
 
       - name: order_date
