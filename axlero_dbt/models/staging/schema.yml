@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: stg_superstore_orders
+    description: "Raw pass-through of Superstore orders from Snowflake RAW schema."
+    columns:
+      - name: order_id
+        description: "Unique identifier for each order line item."
+        tests:
+          - not_null
+
+  - name: stg_superstore_orders_cleaned
+    description: "Cleaned and typed Superstore orders, used as the source table for the Cube.dev semantic layer."
+    columns:
+      - name: order_id
+        description: "Unique identifier for each order line item."
+        tests:
+          - not_null
+      - name: sales
+        description: "Sale amount for the line item."
+        tests:
+          - not_null
+      - name: profit
+        description: "Profit amount for the line item."
+        tests:
+          - not_null
+      - name: order_date
+        description: "Date the order was placed."
+        tests:
+          - not_null
