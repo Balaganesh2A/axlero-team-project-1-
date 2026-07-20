@@ -38,6 +38,7 @@ cubes:
       - name: order_id
         sql: ORDER_ID
         type: string
+        primary_key: true
 
       - name: customer_name
         sql: CUSTOMER_NAME
@@ -62,3 +63,23 @@ cubes:
       - name: order_date
         sql: ORDER_DATE
         type: time
+
+      - name: segment
+        sql: SEGMENT
+        type: string
+
+      - name: state
+        sql: STATE
+        type: string
+
+      - name: city
+        sql: CITY
+        type: string
+
+      - name: sub_category
+        sql: SUB_CATEGORY
+        type: string
+
+      - name: ship_mode
+        sql: SHIP_MODE
+        type: string
