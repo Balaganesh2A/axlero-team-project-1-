@@ -4,7 +4,8 @@ cubes:
 
     measures:
       - name: count
-        type: count
+        sql: order_id
+        type: countDistinct
 
       - name: total_sales
         sql: SALES
@@ -38,7 +39,6 @@ cubes:
       - name: order_id
         sql: ORDER_ID
         type: string
-        primary_key: true
 
       - name: customer_name
         sql: CUSTOMER_NAME
@@ -68,18 +68,6 @@ cubes:
         sql: SEGMENT
         type: string
 
-      - name: state
-        sql: STATE
-        type: string
-
-      - name: city
-        sql: CITY
-        type: string
-
       - name: sub_category
-        sql: SUB_CATEGORY
-        type: string
-
-      - name: ship_mode
-        sql: SHIP_MODE
+        sql: sub_category
         type: string
