@@ -1,11 +1,16 @@
 from fastapi import FastAPI, Body
+from dotenv import load_dotenv
+import os
 import requests
+
+# Load .env file
+load_dotenv()
 
 app = FastAPI()
 
-# Cube configuration
-CUBE_API_URL = "http://localhost:4000/cubejs-api/v1/load"
-CUBE_API_TOKEN = "8e255900dbf61cf1234fd2b25247e90b9c8bdfb0fc091eb2c06efd7c3e490b6e9ebffb0563bb6bc0ce7bff7abc351319fc3c325655ce4c46ab413cf8acae855e"
+# Read Cube configuration
+CUBE_API_URL = os.getenv("CUBE_API_URL")
+CUBE_API_TOKEN = os.getenv("CUBE_API_TOKEN")
 
 
 @app.get("/")
@@ -17,10 +22,29 @@ def home():
 
 @app.get("/sales-by-category")
 def sales_by_category():
+
     query = {
         "measures": ["orders.total_sales"],
         "dimensions": ["orders.category"]
     }
+
+    headers = {
+        "Authorization": CUBE_API_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        CUBE_API_URL,
+        json={"query": query},
+        headers=headers,
+        timeout=10
+    )
+
+    return response.json()
+
+
+@app.post("/query")
+def run_query(query: dict = Body(...)):
 
     headers = {
         "Authorization": CUBE_API_TOKEN,
@@ -43,8 +67,36 @@ def sales_by_category():
     return response.json()
 
 
-@app.post("/query")
-def run_query(query: dict = Body(...)):
+@app.post("/ask")
+def ask(question: dict = Body(...)):
+
+    text = question["question"].lower()
+
+    if "sales" in text and "category" in text:
+
+        cube_query = {
+            "measures": ["orders.total_sales"],
+            "dimensions": ["orders.category"]
+        }
+
+    elif "profit" in text and "region" in text:
+
+        cube_query = {
+            "measures": ["orders.total_profit"],
+            "dimensions": ["orders.region"]
+        }
+
+    elif "quantity" in text:
+
+        cube_query = {
+            "measures": ["orders.total_quantity"]
+        }
+
+    else:
+        return {
+            "error": "Query not supported yet."
+        }
+
     headers = {
         "Authorization": CUBE_API_TOKEN,
         "Content-Type": "application/json"
@@ -52,15 +104,9 @@ def run_query(query: dict = Body(...)):
 
     response = requests.post(
         CUBE_API_URL,
-        json={"query": query},
+        json={"query": cube_query},
         headers=headers,
         timeout=10
     )
-
-    if response.status_code != 200:
-        return {
-            "status": response.status_code,
-            "error": response.text
-        }
 
     return response.json()
