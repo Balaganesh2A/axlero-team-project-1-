@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 import requests
 
 app = FastAPI()
@@ -30,7 +30,31 @@ def sales_by_category():
     response = requests.post(
         CUBE_API_URL,
         json={"query": query},
-        headers=headers
+        headers=headers,
+        timeout=10
+    )
+
+    if response.status_code != 200:
+        return {
+            "status": response.status_code,
+            "error": response.text
+        }
+
+    return response.json()
+
+
+@app.post("/query")
+def run_query(query: dict = Body(...)):
+    headers = {
+        "Authorization": CUBE_API_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        CUBE_API_URL,
+        json={"query": query},
+        headers=headers,
+        timeout=10
     )
 
     if response.status_code != 200:
