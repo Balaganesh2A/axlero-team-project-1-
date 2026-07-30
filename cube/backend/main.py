@@ -13,6 +13,22 @@ CUBE_API_URL = os.getenv("CUBE_API_URL")
 CUBE_API_TOKEN = os.getenv("CUBE_API_TOKEN")
 
 
+def get_sql(query: dict):
+    headers = {
+        "Authorization": CUBE_API_TOKEN,
+        "Content-Type": "application/json"
+    }
+    sql_response = requests.post(
+        CUBE_API_URL.replace("/load", "/sql"),
+        json={"query": query},
+        headers=headers,
+        timeout=10
+    )
+    if sql_response.status_code == 200:
+        return sql_response.json().get("sql", {}).get("sql", "")
+    return None
+
+
 @app.get("/")
 def home():
     return {
@@ -40,7 +56,12 @@ def sales_by_category():
         timeout=10
     )
 
-    return response.json()
+    result = response.json()
+    result["debug"] = {
+        "query": query,
+        "sql": get_sql(query)
+    }
+    return result
 
 
 @app.post("/query")
@@ -64,7 +85,12 @@ def run_query(query: dict = Body(...)):
             "error": response.text
         }
 
-    return response.json()
+    result = response.json()
+    result["debug"] = {
+        "query": query,
+        "sql": get_sql(query)
+    }
+    return result
 
 
 @app.post("/ask")
@@ -96,17 +122,3 @@ def ask(question: dict = Body(...)):
         return {
             "error": "Query not supported yet."
         }
-
-    headers = {
-        "Authorization": CUBE_API_TOKEN,
-        "Content-Type": "application/json"
-    }
-
-    response = requests.post(
-        CUBE_API_URL,
-        json={"query": cube_query},
-        headers=headers,
-        timeout=10
-    )
-
-    return response.json()
