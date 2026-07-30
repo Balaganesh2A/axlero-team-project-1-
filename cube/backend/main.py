@@ -122,3 +122,49 @@ def ask(question: dict = Body(...)):
         return {
             "error": "Query not supported yet."
         }
+<<<<<<< HEAD
+=======
+
+    headers = {
+        "Authorization": CUBE_API_TOKEN,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        CUBE_API_URL,
+        json={"query": cube_query},
+        headers=headers,
+        timeout=10
+    )
+
+    if response.status_code != 200:
+        return {
+            "status": response.status_code,
+            "error": response.text
+        }
+
+    result = response.json()
+
+    answer = ""
+
+    if "data" in result and len(result["data"]) > 0:
+
+        if "sales" in text and "category" in text:
+            answer = "Total Sales by Category:\n"
+            for row in result["data"]:
+                answer += f'{row["orders.category"]}: {row["orders.total_sales"]}\n'
+
+        elif "profit" in text and "region" in text:
+            answer = "Total Profit by Region:\n"
+            for row in result["data"]:
+                answer += f'{row["orders.region"]}: {row["orders.total_profit"]}\n'
+
+        elif "quantity" in text:
+            answer = f'Total Quantity: {result["data"][0]["orders.total_quantity"]}'
+
+    return {
+        "question": question["question"],
+        "answer": answer,
+        "cube_response": result
+    }
+>>>>>>> d454cd6 (Move Cube API configuration to environment variables)
