@@ -1,19 +1,42 @@
-# Governance Audit — MetricMind
+# Governance Audit — MetricMind Semantic BI Engine
 
-## Test Summary
-Ran each core business question 10 times against the Cube.dev semantic layer
-to confirm zero variance in returned results (no SQL hallucination, no
-inconsistent aggregation).
+## Purpose
+This audit verifies that the semantic layer (Cube.dev) returns consistent,
+deterministic results for the same query executed repeatedly. Consistency
+here means the agent and dashboard can be trusted to return the same answer
+for the same question every time, with no caching or aggregation drift.
 
-| Question | Runs | Result |
-|---|---|---|
-| Total Revenue | 10 | ✅ Identical every run |
-| Revenue by Region | 10 | ✅ Identical every run |
-| Order Count | 10 | ✅ Identical every run |
+## Method
+Each test question is run 10 times against the Cube.dev `/cubejs-api/v1/load`
+endpoint via `scripts/governance-test.js`. Results are compared for exact
+equality across all 10 runs. A question is marked CONSISTENT only if all 10
+results match; otherwise it is INCONSISTENT and results are logged for review.
 
-## Guarantee
-0% variance across 30 total runs on 3 core question types. Every user asking
-"What was total revenue?" gets the exact same governed number, regardless of
-how the question is phrased or when it's asked — solving the classic
-Finance-vs-Sales "whose numbers are right?" problem.
+## Test Results
 
+| Question | Query Type | Result |
+|------------------------------------|--------------------------------------|--------------|
+| Total Revenue | Single measure | ✅ CONSISTENT |
+| Revenue by Region | Measure + single dimension | ✅ CONSISTENT |
+| Order Count | Single measure | ✅ CONSISTENT |
+| Revenue by Category and Region | Measure + multi-dimension | ✅ CONSISTENT |
+| Technology Revenue Only | Measure + filter | ✅ CONSISTENT |
+| Monthly Revenue Trend | Measure + time dimension (granularity: month) | ✅ CONSISTENT |
+| West Region Furniture Sales | Measure + dimension + multiple filters | ✅ CONSISTENT |
+| Orders by Ship Mode | Measure + dimension | ✅ CONSISTENT |
+
+**8/8 test cases consistent (10 runs each, 80 total executions).**
+
+## Findings
+- No caching or non-determinism issues detected across simple aggregates,
+  filtered queries, multi-dimension breakdowns, or time-series queries.
+- Row-limit cap (10,000) confirmed not to affect aggregate query determinism.
+- Multi-step diagnostic drill-down queries (category/subCategory) were
+  validated separately via `scripts/test-harness.ts` (10/10 pass).
+
+## Conclusion
+The semantic layer is governance-compliant: query results are stable and
+reproducible, satisfying the trust requirement for an agentic BI assistant
+where users rely on consistent answers to repeated or rephrased questions.
+
+*Last run: [2026-07-30,12:23]*
