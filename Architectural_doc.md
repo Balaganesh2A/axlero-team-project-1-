@@ -1,4 +1,4 @@
-Architecture
+##Architecture
 
 MetricMind follows a layered architecture that combines cloud data warehousing, semantic modeling, AI-driven natural language understanding, and an interactive web interface to deliver governed business intelligence. Instead of allowing the AI model to generate SQL directly, every user query is mapped to predefined business measures and dimensions in Cube.dev. This ensures consistent, transparent, and reliable analytical results while preventing SQL hallucinations.
 
