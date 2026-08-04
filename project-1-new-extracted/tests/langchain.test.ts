@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { generateCubeQuery } from "../lib/langchain.ts";
-
 test("maps sales by category to a Cube query", async () => {
   const result = await generateCubeQuery("Show sales by category");
 

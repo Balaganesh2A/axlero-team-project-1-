@@ -37,6 +37,27 @@ export default function Message({
   const isUser = sender === "user";
   const [showDebug, setShowDebug] = useState(false);
   const chartType = chartQuery ? selectChartType(chartQuery) : null;
+  const measureKey = chartQuery?.measures?.[0];
+const dimensionKeys = chartQuery?.dimensions ?? [];
+const xKey = dimensionKeys[0];
+const seriesKey = dimensionKeys[1]; // present only for 2-dimension queries like category+region
+
+let displayData: any[] = chartData ?? [];
+let seriesNames: string[] = [];
+
+if (chartData && seriesKey && measureKey && xKey) {
+  const grouped = new Map<string, Record<string, any>>();
+  seriesNames = Array.from(new Set(chartData.map((row) => String(row[seriesKey]))));
+  chartData.forEach((row) => {
+    const xValue = String(row[xKey]);
+    if (!grouped.has(xValue)) grouped.set(xValue, { [xKey]: xValue });
+    grouped.get(xValue)![String(row[seriesKey])] = Number(row[measureKey]);
+  });
+  displayData = Array.from(grouped.values());
+}
+
+const barColors = ["#2563eb", "#16a34a", "#f59e0b", "#dc2626", "#7c3aed"];
+
 
   return (
     <div className={`flex w-full ${isUser ? "justify-end" : "justify-start"}`}>
@@ -64,22 +85,27 @@ export default function Message({
             <ResponsiveContainer width="100%" height={220}>
               {chartType === "line" ? (
                 <LineChart data={chartData}>
-                  <XAxis dataKey={Object.keys(chartData[0])[0]} fontSize={11} />
-                  <YAxis fontSize={11} />
-                  <Tooltip />
-                  <Line
-                    type="monotone"
-                    dataKey={Object.keys(chartData[0])[1]}
-                    stroke="#2563eb"
-                  />
-                </LineChart>
+                  <XAxis dataKey={xKey} fontSize={11} />
+                     <YAxis fontSize={11} />
+                         <Tooltip />
+                       <Line type="monotone" dataKey={measureKey} stroke="#2563eb" />
+                       </LineChart>
+
               ) : (
-                <BarChart data={chartData}>
-                  <XAxis dataKey={Object.keys(chartData[0])[0]} fontSize={11} />
-                  <YAxis fontSize={11} />
-                  <Tooltip />
-                  <Bar dataKey={Object.keys(chartData[0])[1]} fill="#2563eb" />
-                </BarChart>
+                <BarChart data={displayData}>
+                <XAxis dataKey={xKey} fontSize={11} />
+                 <YAxis fontSize={11} />
+                       <Tooltip />
+                       {seriesKey
+                    ? seriesNames.map((name, i) => (
+                <Bar key={name} dataKey={name} fill={barColors[i % barColors.length]} />
+                           ))
+                 : (
+                    <Bar dataKey={measureKey} fill="#2563eb" />
+                        )
+                     }
+                    </BarChart>
+
               )}
             </ResponsiveContainer>
           </div>

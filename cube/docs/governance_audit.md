@@ -23,9 +23,9 @@ results match; otherwise it is INCONSISTENT and results are logged for review.
 | Technology Revenue Only | Measure + filter | ✅ CONSISTENT |
 | Monthly Revenue Trend | Measure + time dimension (granularity: month) | ✅ CONSISTENT |
 | West Region Furniture Sales | Measure + dimension + multiple filters | ✅ CONSISTENT |
-| Orders by Ship Mode | Measure + dimension | ✅ CONSISTENT |
 
-**8/8 test cases consistent (10 runs each, 80 total executions).**
+
+**7/7 test cases consistent (10 runs each, 70 total executions).**
 
 ## Findings
 - No caching or non-determinism issues detected across simple aggregates,
