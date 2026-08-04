@@ -123,6 +123,7 @@ def ask(question: dict = Body(...)):
             "error": "Query not supported yet."
         }
 
+
     headers = {
         "Authorization": CUBE_API_TOKEN,
         "Content-Type": "application/json"
