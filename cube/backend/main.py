@@ -122,8 +122,6 @@ def ask(question: dict = Body(...)):
         return {
             "error": "Query not supported yet."
         }
-<<<<<<< HEAD
-=======
 
     headers = {
         "Authorization": CUBE_API_TOKEN,
@@ -167,4 +165,4 @@ def ask(question: dict = Body(...)):
         "answer": answer,
         "cube_response": result
     }
->>>>>>> d454cd6 (Move Cube API configuration to environment variables)
+
