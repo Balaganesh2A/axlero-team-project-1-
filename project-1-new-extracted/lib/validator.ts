@@ -12,11 +12,26 @@ export function validateCubeQuery(result: CubeQueryResult): CubeQueryResult {
 
   const measuresToValidate = result.query.measures ?? [];
   const dimensionsToValidate = result.query.dimensions ?? [];
+  const filtersToValidate = result.query.filters ?? [];
 
-  const hasUnknownMeasure = measuresToValidate.some((measure) => !allowedMeasures.has(measure));
-  const hasUnknownDimension = dimensionsToValidate.some((dimension) => !allowedDimensions.has(dimension));
+  const hasUnknownMeasure = measuresToValidate.some(
+    (measure) => !allowedMeasures.has(measure as (typeof measures)[number])
+  );
 
-  if (hasUnknownMeasure || hasUnknownDimension) {
+  const hasUnknownDimension = dimensionsToValidate.some(
+    (dimension) => !allowedDimensions.has(dimension as (typeof dimensions)[number])
+  );
+
+  const hasUnknownFilter = filtersToValidate.some(
+    (filter) =>
+      !allowedDimensions.has(filter.member as (typeof dimensions)[number])
+  );
+
+  if (
+    hasUnknownMeasure ||
+    hasUnknownDimension ||
+    hasUnknownFilter
+  ) {
     return { error: "Unknown measure or dimension" };
   }
 
