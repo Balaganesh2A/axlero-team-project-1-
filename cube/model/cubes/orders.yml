@@ -71,3 +71,7 @@ cubes:
       - name: sub_category
         sql: sub_category
         type: string
+      
+      
+
+      
