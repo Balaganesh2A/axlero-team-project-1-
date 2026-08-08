@@ -40,3 +40,49 @@ reproducible, satisfying the trust requirement for an agentic BI assistant
 where users rely on consistent answers to repeated or rephrased questions.
 
 *Last run: [2026-07-30,12:23]*
+
+
+## Live Agent Governance Test — [08-08-2026]
+
+Extended governance-test.js to test the full live agent pipeline 
+(/api/chat), not just Cube.js directly. Each question is sent 10 times 
+through the complete chain: natural language → generateCubeQuery (LLM) 
+→ FastAPI → Cube.js → Snowflake → response.
+
+### Results
+
+**Cube-direct tests (existing):** 7/7 consistent
+- Total Revenue ✅
+- Revenue by Region ✅
+- Order Count ✅
+- Revenue by Category and Region ✅
+- Technology Revenue Only ✅
+- Monthly Revenue Trend ✅
+- West Region Furniture Sales ✅
+
+**Live agent tests (new):** 5/5 consistent
+- "How did sales perform this week?" ✅
+- "sales by category" ✅
+- "sales by region" ✅
+- "sales by west region" ✅
+- "Show quantity" ✅
+
+### Significance
+
+All tests passed, including questions that exercise the newly added 
+region-filter detection (detectFilters() in lib/parser.ts). This confirms 
+the LLM-based query generation step is producing identical Cube queries 
+across repeated runs for the same phrasing — i.e., no observed 
+non-determinism in this test set.
+
+### Notes / Caveats
+
+- Test set is small (5 agent questions); broader phrasing variation 
+  (typos, synonyms, indirect phrasing) has not yet been tested.
+- Consistency here means "same answer 10x for identical input text" — 
+  it does not test whether the LLM would produce the same query for 
+  differently-worded questions with the same intent (e.g. "sales by 
+  west region" vs "west region sales").
+- Recommend expanding agentQuestions[] over time as new query types 
+  are added, and re-running before any change to generateCubeQuery, 
+  the Cube schema, or the prompt used for query generation.
