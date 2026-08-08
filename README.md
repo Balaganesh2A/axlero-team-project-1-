@@ -34,7 +34,14 @@ Snowflake  →  dbt (staging models)  →  Cube.dev (semantic layer)
 
 ## Running locally
 
-**dbt**
+Run the three services **in this order**, each in its own terminal tab, and leave all three running simultaneously.
+
+### Prerequisites
+- Docker Desktop installed and running (menu bar whale icon showing "running," not just open). On Apple Silicon: https://desktop.docker.com/mac/main/arm64/Docker.dmg
+- Node.js + npm
+- Python 3 + `uvicorn` available (via conda/pip)
+
+### 1. dbt
 ```bash
 cd axlero_dbt
 pip install -r requirements.txt
@@ -42,21 +49,30 @@ dbt run
 dbt test
 ```
 
-**Cube.dev + backend**
+### 2. Cube.dev (semantic layer)
 ```bash
 cd cube
-cp .env.example .env   # fill in Snowflake + Cube credentials
-docker-compose up      # Cube API + Playground on :4000
-cd backend
-uvicorn main:app --reload   # FastAPI on :8000
+cp .env.example .env   # only if .env doesn't already exist — fill in Snowflake + Cube credentials
+docker compose up      # NOTE: "docker compose" (space), not "docker-compose" (hyphen) on modern Docker Desktop
 ```
+Wait for `Cube API server (...) is listening on 4000` in the logs. Playground is at http://localhost:4000.
 
-**Frontend**
+### 3. FastAPI backend
+```bash
+cd cube/backend
+ls                      # confirm main.py is present — if missing, see Troubleshooting below
+uvicorn main:app --reload
+```
+Should print `Uvicorn running on http://127.0.0.1:8000`. Sanity check: visit http://127.0.0.1:8000 in a browser — you should see `{"message":"FastAPI Backend is running!"}`.
+
+### 4. Frontend
 ```bash
 cd project-1-new-extracted
 npm install
 npm run dev             # :3000
 ```
+Visit http://localhost:3000. If dashboard cards say "Couldn't load ..." — Cube and/or the backend aren't running. Check steps 2 and 3 first.
+
 
 ## Governance
 

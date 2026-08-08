@@ -1,5 +1,5 @@
 import { addMessage, createSession, getSession } from "@/lib/sessions";
-import { generateCubeQuery } from "@/lib/langchain";
+import { generateCubeQuery, formatAnswer } from "@/lib/langchain";
 
 type ChatRequestBody = {
   sessionId?: unknown;
@@ -41,32 +41,29 @@ export async function POST(request: Request) {
 
     const cubeResult = await generateCubeQuery(message);
 
-if ("error" in cubeResult) {
-  return Response.json({ error: cubeResult.error }, { status: 400 });
-}
+    if ("error" in cubeResult) {
+      return Response.json({ error: cubeResult.error }, { status: 400 });
+    }
 
-const cubeApiResponse = await fetch("http://localhost:8000/query", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(cubeResult.query ),
-});
+    const cubeApiResponse = await fetch("http://localhost:8000/query", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cubeResult.query),
+    });
 
-if (!cubeApiResponse.ok) {
-  const errorText = await cubeApiResponse.text();
-  console.error("Cube API failed:", cubeApiResponse.status, errorText);
-  return Response.json(
-    { error: "Cube API request failed", details: errorText },
-    { status: cubeApiResponse.status }
-  );
-}
+    if (!cubeApiResponse.ok) {
+      const errorText = await cubeApiResponse.text();
+      console.error("Cube API failed:", cubeApiResponse.status, errorText);
+      return Response.json(
+        { error: "Cube API request failed", details: errorText },
+        { status: cubeApiResponse.status }
+      );
+    }
 
-const cubeData = await cubeApiResponse.json();
-
-
-const answer = JSON.stringify(cubeData.data ?? cubeData);
-const rawData = cubeData.data ?? [];
-const cubeQuery = cubeResult.query;
-
+    const cubeData = await cubeApiResponse.json();
+    const rawData = cubeData.data ?? [];
+    const cubeQuery = cubeResult.query;
+    const answer = formatAnswer(cubeQuery, rawData);
 
     addMessage(sessionId, { role: "assistant", content: answer });
 
@@ -87,12 +84,12 @@ const cubeQuery = cubeResult.query;
     console.log("-----------------------------------");
 
     return Response.json({
-  answer,
-  history,
-  debug: cubeData.debug,
-  chartData: rawData,
-  chartQuery: cubeQuery,
-});
+      answer,
+      history,
+      debug: cubeData.debug,
+      chartData: rawData,
+      chartQuery: cubeQuery,
+    });
   } catch (error) {
     console.error("[CHAT API ERROR]", error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });

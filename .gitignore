@@ -1,4 +1,5 @@
 __pycache__/
-.DS_Store then echo logs/ then echo package-lock.json
-.DS_Store then echo logs/ then echo package-lock.json
-.DS_Store then echo logs/ then echo package-lock.json
+*.pyc
+.DS_Store
+logs/
+project-1/
